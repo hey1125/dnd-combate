@@ -11,6 +11,8 @@ export function exampleFighter5(): Character {
     attacksPerAction: 2,
     hp: { current: 44, max: 44, temp: 0 },
     concentratingOn: null,
+    effects: [],
+    deathSaves: { successes: 0, failures: 0, stable: false },
     resources: [
       { id: 'second-wind', name: 'Tomar Aliento', max: 2, current: 2, recharge: 'longRest', rechargeAmount: 1 },
       { id: 'action-surge', name: 'Oleada de Acción', max: 1, current: 1, recharge: 'shortRest' },

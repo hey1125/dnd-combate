@@ -31,6 +31,8 @@ const featureSchema = z.object({
   resourceId: z.string().optional(),
   resourceCost: z.number().int().min(1).optional(),
   concentration: z.boolean().optional(),
+  upcast: z.boolean().optional(),
+  durationRounds: int(1, 'Duración (rondas)').optional(),
   effect: effectSchema.optional(),
 })
 
@@ -44,6 +46,20 @@ export const characterSchema = z.object({
   resources: z.array(resourceSchema),
   features: z.array(featureSchema),
   concentratingOn: z.string().nullable(),
+  // Los campos nuevos tienen valor por defecto para que los personajes guardados antes sigan cargando.
+  effects: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        name: z.string().trim().min(1, 'Cada efecto necesita nombre'),
+        roundsLeft: z.number().int().min(0).nullable(),
+        concentration: z.boolean().optional(),
+      }),
+    )
+    .default([]),
+  deathSaves: z
+    .object({ successes: z.number().int().min(0).max(3), failures: z.number().int().min(0).max(3), stable: z.boolean() })
+    .default({ successes: 0, failures: 0, stable: false }),
   turn: z.object({
     round: z.number().int().min(1),
     actionAvailable: z.boolean(),
@@ -51,6 +67,7 @@ export const characterSchema = z.object({
     reactionAvailable: z.boolean(),
     movementRemaining: z.number().int().min(0),
     attacksRemaining: z.number().int().min(0),
+    slotsSpent: z.number().int().min(0).default(0),
   }),
 })
 

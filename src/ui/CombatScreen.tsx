@@ -1,6 +1,8 @@
 import { longRest, shortRest } from '../core/resources'
 import { startCombat, startTurn } from '../core/turn'
 import { useCombat } from '../store/combatStore'
+import { DeathSavesPanel } from './DeathSavesPanel'
+import { EffectsPanel } from './EffectsPanel'
 import { FeatureList } from './FeatureList'
 import { HpPanel } from './HpPanel'
 import { ResourceList } from './ResourceList'
@@ -48,6 +50,8 @@ export function CombatScreen({ onOpenList, onEdit }: Props) {
         </div>
       )}
 
+      <DeathSavesPanel character={character} />
+
       <button className="btn btn--primary btn--big next-turn" onClick={() => apply(`Empieza la ronda ${character.turn.round + 1}`, startTurn)}>
         Nuevo turno →
       </button>
@@ -57,6 +61,7 @@ export function CombatScreen({ onOpenList, onEdit }: Props) {
         <HpPanel character={character} />
         <FeatureList character={character} />
         <ResourceList character={character} />
+        <EffectsPanel character={character} />
       </div>
 
       <section className="card">

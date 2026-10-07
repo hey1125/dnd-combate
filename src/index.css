@@ -163,3 +163,30 @@ select {
 .hint { font-size: 0.82rem; color: var(--muted); margin: 10px 0 0; }
 .errors { margin: 0; padding-left: 18px; }
 .sticky-save { position: sticky; bottom: 0; padding: 12px 0 16px; background: linear-gradient(transparent, var(--bg) 35%); }
+
+/* Rasgos: nivel y selector de espacio */
+.feature-wrap { display: flex; flex-direction: column; gap: 6px; }
+.feature__level { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+.slot-picker { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 10px; border-radius: 10px; background: var(--card-2); }
+
+/* Estados */
+.effects { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.effect { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; border-radius: 10px; background: var(--card-2); }
+.effect--conc { background: color-mix(in srgb, var(--reaction) 18%, var(--card-2)); }
+.effect__name { flex: 1; font-weight: 500; }
+.effect__rounds { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.88rem; }
+.effect .btn--icon { background: transparent; border: none; }
+input.grow { flex: 3; }
+input.narrow { flex: 1; max-width: 100px; }
+
+/* Salvaciones contra muerte */
+.death { border-color: var(--danger); }
+.death--stable { border-color: var(--bonus); }
+.death--dead { border-color: var(--off); opacity: 0.85; }
+.death__status { margin: 0 0 10px; font-weight: 600; }
+.death__rows { display: flex; gap: 24px; flex-wrap: wrap; }
+.death__row { display: flex; align-items: center; gap: 10px; }
+.ds-boxes { display: flex; gap: 6px; }
+.ds-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); }
+.ds-box--success { background: var(--on); border-color: var(--on); }
+.ds-box--failure { background: var(--danger); border-color: var(--danger); }

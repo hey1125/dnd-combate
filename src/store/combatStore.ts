@@ -24,6 +24,8 @@ type CombatStore = {
   saveCharacter: (character: Character) => Promise<void>
   deleteCharacter: (id: string) => Promise<void>
   addExample: () => Promise<void>
+  /** Guarda varios personajes importados (reemplaza los que tengan el mismo id). */
+  importCharacters: (characters: Character[], skipped: string[]) => Promise<void>
   /** Aplica una operación del núcleo y la registra en el historial. */
   apply: (label: string, op: Operation) => void
   damage: (amount: number) => void
@@ -152,13 +154,32 @@ export const useCombat = create<CombatStore>()((set, get) => {
       await get().saveCharacter({ ...exampleFighter5(), id: newId() })
     },
 
+    importCharacters: async (characters, skipped) => {
+      try {
+        await Promise.all(characters.map((c) => repo?.save(c)))
+      } catch {
+        return fail('No se pudieron guardar los personajes importados')
+      }
+      set((s) => {
+        const list = characters.reduce(upsert, s.characters)
+        const active = s.character ? (list.find((c) => c.id === s.character?.id) ?? s.character) : list[0]
+        const extra = skipped.length ? ` · Omitidos ${skipped.length}: ${skipped.join('; ')}` : ''
+        return {
+          characters: list,
+          character: active,
+          history: [],
+          notice: { kind: skipped.length ? 'error' : 'info', text: `Importados ${characters.length} personaje(s)${extra}` },
+        }
+      })
+    },
+
     apply: (label, op) => {
       const current = get().character
       if (!current) return
       const out = op(current)
       if ('ok' in out) {
         if (!out.ok) return fail(out.error)
-        commit(out.character, label)
+        commit(out.character, label, out.warning ? { kind: 'info', text: out.warning } : null)
       } else {
         commit(out, label)
       }
@@ -167,10 +188,10 @@ export const useCombat = create<CombatStore>()((set, get) => {
     damage: (amount) => {
       const current = get().character
       if (!current || amount <= 0) return
-      const { character, concentrationDC } = takeDamage(current, amount)
-      const notice: Notice | null = concentrationDC
-        ? { kind: 'info', text: `Salvación de CON CD ${concentrationDC} para mantener ${current.concentratingOn}` }
-        : null
+      const { character, concentrationDC, notes } = takeDamage(current, amount)
+      const texts = [...notes]
+      if (concentrationDC) texts.push(`Salvación de CON CD ${concentrationDC} para mantener ${current.concentratingOn}`)
+      const notice: Notice | null = texts.length ? { kind: 'info', text: texts.join(' · ') } : null
       commit(character, `Recibe ${amount} de daño`, notice)
     },
 

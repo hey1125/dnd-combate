@@ -10,7 +10,7 @@ describe('Puntos de golpe', () => {
   })
 
   it('no baja de 0 ni cura por encima del máximo', () => {
-    let c = takeDamage(exampleFighter5(), 100).character
+    let c = takeDamage(exampleFighter5(), 50).character
     expect(c.hp.current).toBe(0)
     c = heal(c, 100)
     expect(c.hp.current).toBe(44)

@@ -1,3 +1,4 @@
+import { NO_DEATH_SAVES } from './deathSaves'
 import type { Character, Recharge, Resource, Result } from './types'
 
 const ok = (character: Character): Result => ({ ok: true, character })
@@ -52,12 +53,14 @@ export function shortRest(character: Character): Character {
   return rechargeResources(character, ['shortRest'])
 }
 
-/** Descanso largo: recarga todo (corto + largo), cura al máximo y quita PG temporales y concentración. */
+/** Descanso largo: recarga todo, cura al máximo, quita PG temporales, concentración y efectos. */
 export function longRest(character: Character): Character {
   const rested = rechargeResources(character, ['shortRest', 'longRest'])
   return {
     ...rested,
     hp: { current: rested.hp.max, max: rested.hp.max, temp: 0 },
     concentratingOn: null,
+    effects: [],
+    deathSaves: NO_DEATH_SAVES,
   }
 }

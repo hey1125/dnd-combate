@@ -1,7 +1,8 @@
+import { newId } from './id'
 import { freshTurn } from './turn'
 import type { Character, Feature, Resource } from './types'
 
-export const newId = (): string => crypto.randomUUID()
+export { newId }
 
 /** Personaje vacío listo para editar. */
 export function newCharacter(): Character {
@@ -15,6 +16,8 @@ export function newCharacter(): Character {
     resources: [],
     features: [],
     concentratingOn: null,
+    effects: [],
+    deathSaves: { successes: 0, failures: 0, stable: false },
   }
   return { ...base, turn: freshTurn(base as Character, 1) }
 }

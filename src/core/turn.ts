@@ -1,4 +1,6 @@
+import { addEffect, endConcentration, tickEffects } from './effects'
 import { getResource, rechargeResources, spendResource } from './resources'
+import { isSpellSlot, slotLevel } from './spells'
 import type { ActionCost, Character, Feature, Result, TurnState } from './types'
 
 const ok = (character: Character): Result => ({ ok: true, character })
@@ -12,13 +14,22 @@ export function freshTurn(character: Character, round: number): TurnState {
     reactionAvailable: true,
     movementRemaining: character.speed,
     attacksRemaining: 0,
+    slotsSpent: 0,
   }
 }
 
-/** Inicio de tu turno: se renuevan acción, acción adicional, reacción, movimiento y recursos "por turno". */
-export function startTurn(character: Character): Character {
+/**
+ * Inicio de tu turno: se renuevan acción, acción adicional, reacción, movimiento y recursos "por turno",
+ * y se descuenta una ronda a los efectos con duración. Avisa de los que terminaron.
+ */
+export function startTurn(character: Character): Result {
   const recharged = rechargeResources(character, ['turn'])
-  return { ...recharged, turn: freshTurn(recharged, character.turn.round + 1) }
+  const { character: ticked, expired } = tickEffects(recharged)
+  return {
+    ok: true,
+    character: { ...ticked, turn: freshTurn(ticked, character.turn.round + 1) },
+    warning: expired.length ? `Terminó: ${expired.join(', ')}` : undefined,
+  }
 }
 
 /** Inicia un combate nuevo en la ronda 1. */
@@ -64,6 +75,7 @@ export function spendCost(character: Character, cost: ActionCost): Result {
  */
 export function attack(character: Character): Result {
   const t = character.turn
+  if (character.hp.current === 0) return fail('Estás a 0 PG: no puedes actuar')
   if (t.attacksRemaining > 0) {
     return ok({ ...character, turn: { ...t, attacksRemaining: t.attacksRemaining - 1 } })
   }
@@ -82,13 +94,30 @@ export function move(character: Character, feet: number): Result {
   return ok({ ...character, turn: { ...t, movementRemaining: t.movementRemaining - feet } })
 }
 
+export type FeatureOptions = {
+  /** Espacio de conjuro elegido para lanzarlo a nivel superior. */
+  slotId?: string
+}
+
 /** Usa un rasgo/conjuro: paga el costo de acción, el recurso y aplica su efecto. */
-export function applyFeature(character: Character, feature: Feature): Result {
+export function applyFeature(character: Character, feature: Feature, options: FeatureOptions = {}): Result {
+  // 0. ¿Qué recurso se gasta? El del rasgo, o el espacio superior elegido.
+  let resourceId = feature.resourceId
+  if (options.slotId && options.slotId !== feature.resourceId) {
+    const base = slotLevel(feature.resourceId)
+    const chosen = slotLevel(options.slotId)
+    if (base === null || chosen === null) return fail(`${feature.name} no usa espacios de conjuro`)
+    if (!feature.upcast) return fail(`${feature.name} no se puede lanzar a nivel superior`)
+    if (chosen < base) return fail(`${feature.name} necesita un espacio de nivel ${base} o más`)
+    resourceId = options.slotId
+  }
+  if (character.hp.current === 0) return fail('Estás a 0 PG: no puedes actuar')
+
   // 1. Comprobar todo antes de gastar nada.
-  if (feature.resourceId) {
-    const resource = getResource(character, feature.resourceId)
-    const needed = feature.resourceCost ?? 1
-    if (!resource) return fail(`No existe el recurso "${feature.resourceId}"`)
+  const needed = feature.resourceCost ?? 1
+  if (resourceId) {
+    const resource = getResource(character, resourceId)
+    if (!resource) return fail(`No existe el recurso "${resourceId}"`)
     if (resource.current < needed) return fail(`No te quedan usos de ${resource.name}`)
   }
 
@@ -96,16 +125,26 @@ export function applyFeature(character: Character, feature: Feature): Result {
   const paid = spendCost(character, feature.cost)
   if (!paid.ok) return fail(`${feature.name}: ${paid.error} (cuesta ${costName(feature.cost)})`)
   let next = paid.character
+  let warning: string | undefined
 
-  // 3. Pagar recurso.
-  if (feature.resourceId) {
-    const spent = spendResource(next, feature.resourceId, feature.resourceCost ?? 1)
+  // 3. Pagar recurso. Los espacios de conjuro se cuentan por turno (regla 2024: uno por turno).
+  if (resourceId) {
+    const spent = spendResource(next, resourceId, needed)
     if (!spent.ok) return spent
     next = spent.character
+    if (isSpellSlot(resourceId)) {
+      if (next.turn.slotsSpent >= 1) warning = 'Ya gastaste un espacio de conjuro este turno (regla 2024: solo uno por turno)'
+      next = { ...next, turn: { ...next.turn, slotsSpent: next.turn.slotsSpent + 1 } }
+    }
   }
 
-  // 4. Concentración: un conjuro nuevo reemplaza al anterior.
-  if (feature.concentration) next = { ...next, concentratingOn: feature.name }
+  // 4. Concentración (reemplaza la anterior) y duración.
+  const level = slotLevel(resourceId)
+  const label = level !== null && level !== slotLevel(feature.resourceId) ? `${feature.name} (nv ${level})` : feature.name
+  if (feature.concentration) next = { ...endConcentration(next), concentratingOn: label }
+  if (feature.concentration || feature.durationRounds) {
+    next = addEffect(next, { name: label, roundsLeft: feature.durationRounds ?? null, concentration: feature.concentration })
+  }
 
   // 5. Efecto.
   const effect = feature.effect ?? { kind: 'none' }
@@ -121,10 +160,10 @@ export function applyFeature(character: Character, feature: Feature): Result {
     case 'none':
       break
   }
-  return ok(next)
+  return { ok: true, character: next, warning }
 }
 
 /** Termina la concentración (por fallar la salvación o voluntariamente). */
 export function dropConcentration(character: Character): Character {
-  return { ...character, concentratingOn: null }
+  return endConcentration(character)
 }

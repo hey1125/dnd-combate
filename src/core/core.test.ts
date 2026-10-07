@@ -69,7 +69,7 @@ describe('Economía de acciones', () => {
     let c = exampleFighter5()
     c = must(attack(c))
     c = must(move(c, 30))
-    c = startTurn(c)
+    c = must(startTurn(c))
     expect(c.turn.round).toBe(2)
     expect(c.turn.actionAvailable).toBe(true)
     expect(c.turn.movementRemaining).toBe(30)

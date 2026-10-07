@@ -41,3 +41,27 @@ export function Select<T extends string>({
     </select>
   )
 }
+
+/** Input numérico opcional: vacío = undefined (sin valor). */
+export function OptionalNumberInput({
+  value,
+  onChange,
+  min,
+  placeholder,
+}: {
+  value: number | undefined
+  onChange: (n: number | undefined) => void
+  min?: number
+  placeholder?: string
+}) {
+  return (
+    <input
+      type="number"
+      inputMode="numeric"
+      min={min}
+      placeholder={placeholder}
+      value={value === undefined || Number.isNaN(value) ? '' : value}
+      onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))}
+    />
+  )
+}

@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { applyEdits, fullCasterSlots, newCharacter, newFeature, newResource } from '../core/factory'
 import { validateCharacter } from '../core/schema'
 import type { ActionCost, Character, Feature, Recharge, Resource } from '../core/types'
-import { Field, NumberInput, Select } from './fields'
+import { isSpellSlot } from '../core/spells'
+import { Field, NumberInput, OptionalNumberInput, Select } from './fields'
 import { costLabel, rechargeLabel } from './labels'
 
 type Props = {
@@ -172,7 +173,13 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
                   <Select
                     value={f.resourceId ?? ''}
                     options={resourceOptions}
-                    onChange={(id) => patchFeature(f.id, { resourceId: id || undefined, resourceCost: id ? (f.resourceCost ?? 1) : undefined })}
+                    onChange={(id) =>
+                      patchFeature(f.id, {
+                        resourceId: id || undefined,
+                        resourceCost: id ? (f.resourceCost ?? 1) : undefined,
+                        upcast: isSpellSlot(id) ? f.upcast : undefined,
+                      })
+                    }
                   />
                 </Field>
                 {f.resourceId && (
@@ -191,10 +198,24 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
                     }
                   />
                 </Field>
+                <Field label="Duración (rondas)">
+                  <OptionalNumberInput
+                    value={f.durationRounds}
+                    min={1}
+                    placeholder="—"
+                    onChange={(durationRounds) => patchFeature(f.id, { durationRounds })}
+                  />
+                </Field>
                 <label className="check">
                   <input type="checkbox" checked={!!f.concentration} onChange={(e) => patchFeature(f.id, { concentration: e.target.checked })} />
                   Concentración
                 </label>
+                {isSpellSlot(f.resourceId) && (
+                  <label className="check">
+                    <input type="checkbox" checked={!!f.upcast} onChange={(e) => patchFeature(f.id, { upcast: e.target.checked })} />
+                    Nivel superior
+                  </label>
+                )}
               </div>
               <button
                 className="btn btn--small btn--ghost-danger"
@@ -205,6 +226,7 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
             </div>
           ))}
         </div>
+        <p className="hint">Duración: 1 minuto = 10 rondas. Vacío = sin duración. "Nivel superior" permite elegir un espacio más alto al lanzarlo.</p>
         <div className="row">
           <button className="btn" onClick={() => setDraft((d) => ({ ...d, features: [...d.features, newFeature()] }))}>
             + Rasgo o conjuro
