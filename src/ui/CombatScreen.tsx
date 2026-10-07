@@ -6,12 +6,14 @@ import { HpPanel } from './HpPanel'
 import { ResourceList } from './ResourceList'
 import { TurnPanel } from './TurnPanel'
 
-export function CombatScreen() {
+type Props = { onOpenList: () => void; onEdit: () => void }
+
+export function CombatScreen({ onOpenList, onEdit }: Props) {
   const character = useCombat((s) => s.character)
   const log = useCombat((s) => s.log)
   const notice = useCombat((s) => s.notice)
   const canUndo = useCombat((s) => s.history.length > 0)
-  const { apply, undo, dismissNotice, resetToExample } = useCombat.getState()
+  const { apply, undo, dismissNotice } = useCombat.getState()
 
   if (!character) return <p className="loading">Cargando…</p>
 
@@ -24,9 +26,17 @@ export function CombatScreen() {
             Nivel {character.level} · Ronda {character.turn.round}
           </p>
         </div>
-        <button className="btn btn--small" disabled={!canUndo} onClick={undo}>
-          ↶ Deshacer
-        </button>
+        <div className="top__actions">
+          <button className="btn btn--small" disabled={!canUndo} onClick={undo}>
+            ↶ Deshacer
+          </button>
+          <button className="btn btn--small" onClick={onEdit}>
+            Editar
+          </button>
+          <button className="btn btn--small" onClick={onOpenList}>
+            Personajes
+          </button>
+        </div>
       </header>
 
       {notice && (
@@ -79,11 +89,6 @@ export function CombatScreen() {
         )}
       </section>
 
-      <footer className="footer">
-        <button className="btn btn--link" onClick={resetToExample}>
-          Reiniciar personaje de ejemplo
-        </button>
-      </footer>
     </main>
   )
 }
