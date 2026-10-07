@@ -83,7 +83,7 @@ export function move(character: Character, feet: number): Result {
 }
 
 /** Usa un rasgo/conjuro: paga el costo de acción, el recurso y aplica su efecto. */
-export function useFeature(character: Character, feature: Feature): Result {
+export function applyFeature(character: Character, feature: Feature): Result {
   // 1. Comprobar todo antes de gastar nada.
   if (feature.resourceId) {
     const resource = getResource(character, feature.resourceId)

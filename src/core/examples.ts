@@ -20,6 +20,7 @@ export function exampleFighter5(): Character {
       { id: 'second-wind', name: 'Tomar Aliento', cost: 'bonusAction', resourceId: 'second-wind' },
       { id: 'action-surge', name: 'Oleada de Acción', cost: 'free', resourceId: 'action-surge', effect: { kind: 'grantAction' } },
       { id: 'dash', name: 'Correr', cost: 'action', effect: { kind: 'grantMovement', amount: 'speed' } },
+      { id: 'opportunity-attack', name: 'Ataque de oportunidad', cost: 'reaction' },
     ],
   }
   return { ...base, turn: freshTurn(base as Character, 1) }

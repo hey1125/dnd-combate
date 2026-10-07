@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { exampleFighter5 } from './examples'
 import { getResource, longRest, shortRest } from './resources'
-import { attack, move, startTurn, useFeature } from './turn'
+import { attack, move, startTurn, applyFeature } from './turn'
 import type { Character, Feature, Result } from './types'
 
 /** Ayuda para los tests: si falla, el test se rompe con el mensaje. */
@@ -31,7 +31,7 @@ describe('Ataque Adicional', () => {
     let c = exampleFighter5()
     c = must(attack(c))
     c = must(attack(c))
-    c = must(useFeature(c, feature(c, 'action-surge')))
+    c = must(applyFeature(c, feature(c, 'action-surge')))
     c = must(attack(c))
     c = must(attack(c))
     expect(attack(c).ok).toBe(false)
@@ -42,8 +42,8 @@ describe('Ataque Adicional', () => {
 describe('Economía de acciones', () => {
   it('no deja usar dos acciones adicionales', () => {
     let c = exampleFighter5()
-    c = must(useFeature(c, feature(c, 'second-wind')))
-    const again = useFeature(c, feature(c, 'second-wind'))
+    c = must(applyFeature(c, feature(c, 'second-wind')))
+    const again = applyFeature(c, feature(c, 'second-wind'))
     expect(again.ok).toBe(false)
   })
 
@@ -52,13 +52,13 @@ describe('Economía de acciones', () => {
     c = must(attack(c)) // gasta la acción
     const before = getResource(c, 'action-surge')?.current
     // Correr cuesta acción → debe fallar sin tocar nada
-    expect(useFeature(c, feature(c, 'dash')).ok).toBe(false)
+    expect(applyFeature(c, feature(c, 'dash')).ok).toBe(false)
     expect(getResource(c, 'action-surge')?.current).toBe(before)
   })
 
   it('Correr duplica el movimiento', () => {
     let c = exampleFighter5()
-    c = must(useFeature(c, feature(c, 'dash')))
+    c = must(applyFeature(c, feature(c, 'dash')))
     expect(c.turn.movementRemaining).toBe(60)
     c = must(move(c, 45))
     expect(c.turn.movementRemaining).toBe(15)
@@ -79,8 +79,8 @@ describe('Economía de acciones', () => {
 describe('Descansos', () => {
   it('descanso corto recarga Oleada de Acción pero no Tomar Aliento', () => {
     let c = exampleFighter5()
-    c = must(useFeature(c, feature(c, 'action-surge')))
-    c = must(useFeature(c, feature(c, 'second-wind')))
+    c = must(applyFeature(c, feature(c, 'action-surge')))
+    c = must(applyFeature(c, feature(c, 'second-wind')))
     c = shortRest(c)
     expect(getResource(c, 'action-surge')?.current).toBe(1)
     expect(getResource(c, 'second-wind')?.current).toBe(1)
