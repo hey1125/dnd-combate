@@ -1,3 +1,5 @@
+import seraphineJson from '../../examples/seraphine-delmark.json?raw'
+import { parseImport } from './io'
 import { freshTurn } from './turn'
 import type { Character } from './types'
 
@@ -28,4 +30,15 @@ export function exampleFighter5(): Character {
     ],
   }
   return { ...base, turn: freshTurn(base as Character, 1) }
+}
+
+/**
+ * Personaje de ejemplo complejo: Seraphine Delmark, Artífice 5 / Guerrero 2, con objetos personalizados,
+ * grupos, descripciones, ventajas y un recordatorio de descanso. Sale de `examples/seraphine-delmark.json`
+ * y pasa por la misma validación que cualquier importación.
+ */
+export function exampleSeraphine(): Character {
+  const result = parseImport(seraphineJson)
+  if (!result.ok || result.characters.length === 0) throw new Error('El ejemplo de Seraphine no es válido')
+  return result.characters[0]
 }

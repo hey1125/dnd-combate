@@ -1,0 +1,747 @@
+{
+  "app": "dnd-combate",
+  "version": 1,
+  "exportedAt": "2026-10-28T04:00:00.000Z",
+  "characters": [
+    {
+      "id": "seraphine-delmark",
+      "name": "Seraphine Delmark",
+      "level": 7,
+      "speed": 30,
+      "attacksPerAction": 2,
+      "hp": {
+        "current": 77,
+        "max": 77,
+        "temp": 0
+      },
+      "resources": [
+        {
+          "id": "slot-1",
+          "name": "Espacios de conjuro nv 1",
+          "max": 4,
+          "current": 4,
+          "recharge": "longRest",
+          "group": "Combate"
+        },
+        {
+          "id": "slot-2",
+          "name": "Espacios de conjuro nv 2",
+          "max": 2,
+          "current": 2,
+          "recharge": "longRest",
+          "group": "Combate"
+        },
+        {
+          "id": "action-surge",
+          "name": "Acción súbita",
+          "max": 1,
+          "current": 1,
+          "recharge": "shortRest",
+          "group": "Combate"
+        },
+        {
+          "id": "second-wind",
+          "name": "Tomar aliento (1d10+2)",
+          "max": 1,
+          "current": 1,
+          "recharge": "shortRest",
+          "group": "Combate"
+        },
+        {
+          "id": "sobrecarga",
+          "name": "Sobrecarga de proyectiles",
+          "max": 3,
+          "current": 3,
+          "recharge": "longRest",
+          "group": "Combate"
+        },
+        {
+          "id": "escopeta-municion",
+          "name": "Munición S.D. Escopeta",
+          "max": 3,
+          "current": 3,
+          "recharge": "never",
+          "group": "Combate"
+        },
+        {
+          "id": "bombas",
+          "name": "Bombas de mano",
+          "max": 5,
+          "current": 5,
+          "recharge": "never",
+          "group": "Combate"
+        },
+        {
+          "id": "susurros",
+          "name": "Susurros disonantes",
+          "max": 2,
+          "current": 2,
+          "recharge": "longRest",
+          "group": "Combate"
+        },
+        {
+          "id": "pocion-comun",
+          "name": "Poción de vida común (2d4+2)",
+          "max": 9,
+          "current": 9,
+          "recharge": "never",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "pocion-moderada",
+          "name": "Poción de vida moderada (4d4+4)",
+          "max": 11,
+          "current": 11,
+          "recharge": "never",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "pocion-superior",
+          "name": "Poción de vida superior (8d4+8)",
+          "max": 3,
+          "current": 3,
+          "recharge": "never",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "pocion-volar",
+          "name": "Poción de volar",
+          "max": 1,
+          "current": 1,
+          "recharge": "never",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "humo",
+          "name": "Humo alquímico",
+          "max": 1,
+          "current": 1,
+          "recharge": "never",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "veneno",
+          "name": "Veneno narcótico (CD 13)",
+          "max": 1,
+          "current": 1,
+          "recharge": "never",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "med-ceremonia",
+          "name": "Ceremonia",
+          "max": 1,
+          "current": 1,
+          "recharge": "longRest",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-curar",
+          "name": "Curar heridas",
+          "max": 1,
+          "current": 1,
+          "recharge": "longRest",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-idiomas",
+          "name": "Entender idiomas",
+          "max": 1,
+          "current": 1,
+          "recharge": "longRest",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-conocimiento",
+          "name": "Conocimiento prestado",
+          "max": 1,
+          "current": 1,
+          "recharge": "longRest",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-fortuna",
+          "name": "Favor de la fortuna",
+          "max": 1,
+          "current": 1,
+          "recharge": "longRest",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-memorias",
+          "name": "Robar memorias",
+          "max": 1,
+          "current": 1,
+          "recharge": "longRest",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "invocar-no-muerto",
+          "name": "Invocar no muerto",
+          "max": 3,
+          "current": 3,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-nauseabundo",
+          "name": "Rayo nauseabundo",
+          "max": 4,
+          "current": 4,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-infligir",
+          "name": "Infligir heridas",
+          "max": 4,
+          "current": 4,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-debilitador",
+          "name": "Rayo debilitador",
+          "max": 4,
+          "current": 4,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-revivir",
+          "name": "Revivir",
+          "max": 4,
+          "current": 4,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-maldicion",
+          "name": "Imponer maldición",
+          "max": 4,
+          "current": 4,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-marchitar",
+          "name": "Marchitar",
+          "max": 3,
+          "current": 3,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-inundacion",
+          "name": "Inundación de energía negativa",
+          "max": 2,
+          "current": 2,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-danar",
+          "name": "Dañar",
+          "max": 1,
+          "current": 1,
+          "recharge": "longRest",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "hit-dice-d8",
+          "name": "Dados de golpe (d8)",
+          "max": 5,
+          "current": 5,
+          "recharge": "longRest",
+          "rechargeAmount": "half",
+          "group": "Dados de golpe"
+        },
+        {
+          "id": "hit-dice-d10",
+          "name": "Dados de golpe (d10)",
+          "max": 2,
+          "current": 2,
+          "recharge": "longRest",
+          "rechargeAmount": "half",
+          "group": "Dados de golpe"
+        }
+      ],
+      "features": [
+        {
+          "id": "dash",
+          "name": "Correr",
+          "cost": "action",
+          "effect": {
+            "kind": "grantMovement",
+            "amount": "speed"
+          },
+          "group": "Básico"
+        },
+        {
+          "id": "opportunity-attack",
+          "name": "Ataque de oportunidad",
+          "cost": "reaction",
+          "group": "Básico"
+        },
+        {
+          "id": "action-surge",
+          "name": "Acción súbita",
+          "cost": "free",
+          "resourceId": "action-surge",
+          "effect": {
+            "kind": "grantAction"
+          },
+          "group": "Básico"
+        },
+        {
+          "id": "second-wind",
+          "name": "Tomar aliento",
+          "cost": "bonusAction",
+          "resourceId": "second-wind",
+          "group": "Básico"
+        },
+        {
+          "id": "sobrecarga",
+          "name": "Sobrecarga de proyectiles",
+          "cost": "free",
+          "resourceId": "sobrecarga",
+          "description": "Decláralo antes de atacar. Si aciertas con un arma a distancia, el daño se duplica. 3 usos por día (= competencia).",
+          "group": "S.D. Escopeta"
+        },
+        {
+          "id": "recargar",
+          "name": "Recargar S.D. Escopeta",
+          "cost": "bonusAction",
+          "description": "Cargador de 3 disparos. Recuerda subir la munición en Recursos.",
+          "group": "S.D. Escopeta"
+        },
+        {
+          "id": "transformar",
+          "name": "Transformar S.D.",
+          "cost": "bonusAction",
+          "description": "Cambia entre rifle y lanza.",
+          "group": "S.D. Escopeta"
+        },
+        {
+          "id": "modo-estatico",
+          "name": "Modo estático",
+          "cost": "bonusAction",
+          "description": "Usa la barra inamovible: el próximo disparo va con ventaja y sin retroceso (no haces la salvación de CON CD 12).",
+          "group": "S.D. Escopeta"
+        },
+        {
+          "id": "defensor",
+          "name": "Ordenar al Defensor de acero",
+          "cost": "bonusAction",
+          "description": "Paraguas guardián de Seraphine (Defensor de acero).",
+          "group": "Combate"
+        },
+        {
+          "id": "granada",
+          "name": "Granada de fragmentación",
+          "cost": "action",
+          "description": "Alcance 20/60 pies. Salvación DES CD 15: 5d6 de fuerza, la mitad si la supera.",
+          "group": "Combate"
+        },
+        {
+          "id": "bomba",
+          "name": "Bomba de mano",
+          "cost": "action",
+          "resourceId": "bombas",
+          "description": "Salvación DES CD 15: 3d6 + nivel del creador, la mitad si la supera. (Se asumió +5 por nivel de artífice; podría ser +7.)",
+          "group": "Combate"
+        },
+        {
+          "id": "susurros",
+          "name": "Susurros disonantes",
+          "cost": "action",
+          "resourceId": "susurros",
+          "description": "Ataque mágico, 60 pies. Salvación SAB CD 17 (8 + 3 + 6): 4d6 psíquico. Si falla, huye de ti; si la supera, mitad de daño y no huye.",
+          "group": "Combate"
+        },
+        {
+          "id": "guia",
+          "name": "Guía",
+          "cost": "action",
+          "concentration": true,
+          "durationRounds": 10,
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "prestidigitacion",
+          "name": "Prestidigitación",
+          "cost": "action",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "escudo",
+          "name": "Escudo",
+          "cost": "reaction",
+          "resourceId": "slot-1",
+          "durationRounds": 1,
+          "description": "+5 a la CA hasta el inicio de tu próximo turno, incluso contra el ataque que lo activa. Inmune a Proyectil mágico.",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "caida-pluma",
+          "name": "Caída de pluma",
+          "cost": "reaction",
+          "resourceId": "slot-1",
+          "durationRounds": 10,
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "curar-heridas",
+          "name": "Curar heridas",
+          "cost": "action",
+          "resourceId": "slot-1",
+          "upcast": true,
+          "description": "Cura 1d8 por nivel de espacio + 6 (INT). No funciona en no muertos ni constructos.",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "heroismo",
+          "name": "Heroísmo",
+          "cost": "action",
+          "resourceId": "slot-1",
+          "upcast": true,
+          "concentration": true,
+          "durationRounds": 10,
+          "description": "Una criatura por nivel de espacio: inmune al miedo y gana PG temporales iguales a tu mod. de INT (+6) al inicio de cada turno.",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "falsa-vida",
+          "name": "Falsa vida",
+          "cost": "action",
+          "resourceId": "slot-1",
+          "upcast": true,
+          "durationRounds": 600,
+          "description": "1d4+4 PG temporales (+5 por nivel por encima del 1). Dura 1 hora.",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "fuego-feerico",
+          "name": "Fuego feérico",
+          "cost": "action",
+          "resourceId": "slot-1",
+          "concentration": true,
+          "durationRounds": 10,
+          "description": "Cubo de 20 pies. Salvación DES CD 20 o queda iluminado: los ataques contra ellos tienen ventaja.",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "detectar-magia",
+          "name": "Detectar magia",
+          "cost": "action",
+          "resourceId": "slot-1",
+          "concentration": true,
+          "durationRounds": 100,
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "castigo-cegador",
+          "name": "Castigo cegador",
+          "cost": "bonusAction",
+          "resourceId": "slot-2",
+          "upcast": true,
+          "concentration": true,
+          "durationRounds": 10,
+          "description": "Tu próximo ataque con arma que acierte hace daño extra y el objetivo puede quedar cegado.",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "vinculo-protector",
+          "name": "Vínculo protector",
+          "cost": "action",
+          "resourceId": "slot-2",
+          "upcast": true,
+          "durationRounds": 600,
+          "description": "Toque. El aliado gana +1 CA, +1 a salvaciones y resistencia a todo el daño; tú recibes el mismo daño que él. 1 hora.",
+          "group": "Conjuros de artífice"
+        },
+        {
+          "id": "beber-comun",
+          "name": "Beber poción común",
+          "cost": "action",
+          "resourceId": "pocion-comun",
+          "description": "Cura 2d4+2.",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "beber-moderada",
+          "name": "Beber poción moderada",
+          "cost": "action",
+          "resourceId": "pocion-moderada",
+          "description": "Cura 4d4+4.",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "beber-superior",
+          "name": "Beber poción superior",
+          "cost": "action",
+          "resourceId": "pocion-superior",
+          "description": "Cura 8d4+8.",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "beber-volar",
+          "name": "Beber poción de volar",
+          "cost": "action",
+          "resourceId": "pocion-volar",
+          "durationRounds": 600,
+          "description": "Velocidad de vuelo = tu velocidad (30 pies) y puedes flotar, durante 1 hora.",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "humo",
+          "name": "Romper humo alquímico",
+          "cost": "action",
+          "resourceId": "humo",
+          "durationRounds": 10,
+          "description": "Radio de 20 pies muy oscurecido durante 1 minuto o hasta que lo disperse el viento.",
+          "group": "Pociones y consumibles"
+        },
+        {
+          "id": "med-ceremonia",
+          "name": "Ceremonia",
+          "cost": "action",
+          "resourceId": "med-ceremonia",
+          "description": "Del Medallón del Rey amarillo: 1 vez al día, no cuenta para tus conjuros preparados.",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-curar",
+          "name": "Curar heridas",
+          "cost": "action",
+          "resourceId": "med-curar",
+          "description": "Del Medallón: la primera vez no gasta espacio de conjuro.",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-idiomas",
+          "name": "Entender idiomas",
+          "cost": "action",
+          "resourceId": "med-idiomas",
+          "durationRounds": 600,
+          "description": "Del Medallón del Rey amarillo: 1 vez al día, no cuenta para tus conjuros preparados.",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-conocimiento",
+          "name": "Conocimiento prestado",
+          "cost": "action",
+          "resourceId": "med-conocimiento",
+          "description": "Del Medallón del Rey amarillo: 1 vez al día, no cuenta para tus conjuros preparados.",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-fortuna",
+          "name": "Favor de la fortuna",
+          "cost": "action",
+          "resourceId": "med-fortuna",
+          "description": "Del Medallón del Rey amarillo: 1 vez al día, no cuenta para tus conjuros preparados.",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "med-memorias",
+          "name": "Robar memorias",
+          "cost": "action",
+          "resourceId": "med-memorias",
+          "description": "Del Medallón del Rey amarillo: 1 vez al día, no cuenta para tus conjuros preparados.",
+          "group": "Medallón del Rey amarillo"
+        },
+        {
+          "id": "invocar-no-muerto",
+          "name": "Invocar no muerto",
+          "cost": "action",
+          "resourceId": "invocar-no-muerto",
+          "description": "Un no muerto a la vez, VD hasta 3 (mitad de tu nivel). Suma tu competencia a sus ataques, daño, CD y CA. Obedece tus órdenes y dura 24 horas.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-nauseabundo",
+          "name": "Rayo nauseabundo",
+          "cost": "action",
+          "resourceId": "nec-nauseabundo",
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-infligir",
+          "name": "Infligir heridas",
+          "cost": "action",
+          "resourceId": "nec-infligir",
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-debilitador",
+          "name": "Rayo debilitador",
+          "cost": "action",
+          "resourceId": "nec-debilitador",
+          "concentration": true,
+          "durationRounds": 10,
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-revivir",
+          "name": "Revivir",
+          "cost": "action",
+          "resourceId": "nec-revivir",
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-maldicion",
+          "name": "Imponer maldición",
+          "cost": "action",
+          "resourceId": "nec-maldicion",
+          "concentration": true,
+          "durationRounds": 10,
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-marchitar",
+          "name": "Marchitar",
+          "cost": "action",
+          "resourceId": "nec-marchitar",
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-inundacion",
+          "name": "Inundación de energía negativa",
+          "cost": "action",
+          "resourceId": "nec-inundacion",
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        },
+        {
+          "id": "nec-danar",
+          "name": "Dañar",
+          "cost": "action",
+          "resourceId": "nec-danar",
+          "description": "Del Necronomicón: no gasta espacio de conjuro. Cuidado: tras cada descanso tira 1d4 para el trastorno del día.",
+          "group": "Necronomicón"
+        }
+      ],
+      "concentratingOn": null,
+      "restPrompts": [
+        {
+          "id": "necronomicon-trastorno",
+          "question": "Necronomicón: ¿qué sacaste en el trastorno del día (1d4)?",
+          "after": "both",
+          "options": [
+            {
+              "label": "1 · Voces susurrantes",
+              "effect": {
+                "name": "Voces susurrantes",
+                "rules": [
+                  {
+                    "kind": "disadvantage",
+                    "text": "Salvaciones de SAB"
+                  }
+                ]
+              }
+            },
+            {
+              "label": "2 · Sombras en las esquinas",
+              "effect": {
+                "name": "Sombras en las esquinas",
+                "rules": [
+                  {
+                    "kind": "disadvantage",
+                    "text": "Pruebas de Percepción e Investigación"
+                  }
+                ]
+              }
+            },
+            {
+              "label": "3 · Figura que aparece y desaparece",
+              "effect": {
+                "name": "Figura que aparece y desaparece",
+                "rules": [
+                  {
+                    "kind": "disadvantage",
+                    "text": "Salvaciones de CON para mantener la concentración"
+                  }
+                ]
+              }
+            },
+            {
+              "label": "4 · Sin trastorno"
+            }
+          ]
+        }
+      ],
+      "advantages": [
+        {
+          "id": "adv-hechizado",
+          "kind": "advantage",
+          "text": "Salvaciones contra quedar hechizada",
+          "source": "Ancestro feérico"
+        },
+        {
+          "id": "adv-int",
+          "kind": "advantage",
+          "text": "Tiradas de INT, incluidas las salvaciones",
+          "source": "Cerebelos aberrantes"
+        },
+        {
+          "id": "adv-estatico",
+          "kind": "advantage",
+          "text": "Próximo disparo tras usar Modo estático",
+          "source": "S.D. Escopeta"
+        },
+        {
+          "id": "res-elementos",
+          "kind": "resistance",
+          "text": "Fuego, frío y electricidad",
+          "source": "Armadura Junes"
+        },
+        {
+          "id": "res-fisico",
+          "kind": "resistance",
+          "text": "Perforante, contundente y cortante de armas no mágicas",
+          "source": "Armadura Junes"
+        },
+        {
+          "id": "res-mente",
+          "kind": "resistance",
+          "text": "Encantamiento, miedo y dormido",
+          "source": "Cerebelos aberrantes"
+        },
+        {
+          "id": "inm-sueno",
+          "kind": "immunity",
+          "text": "Quedar dormida por magia",
+          "source": "Ancestro feérico"
+        },
+        {
+          "id": "inm-ambiente",
+          "kind": "immunity",
+          "text": "Frío o calor extremos del ambiente y falta de aire (cúpula de oxígeno)",
+          "source": "Armadura Junes"
+        }
+      ],
+      "effects": [],
+      "deathSaves": {
+        "successes": 0,
+        "failures": 0,
+        "stable": false
+      },
+      "turn": {
+        "round": 1,
+        "actionAvailable": true,
+        "bonusActionAvailable": true,
+        "reactionAvailable": true,
+        "movementRemaining": 30,
+        "attacksRemaining": 0,
+        "slotsSpent": 0
+      }
+    }
+  ]
+}

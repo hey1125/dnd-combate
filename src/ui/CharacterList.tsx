@@ -181,8 +181,12 @@ export function CharacterList({ onPlay, onEdit }: Props) {
       </section>
 
       <footer className="footer">
-        <button className="btn btn--link" onClick={addExample}>
-          Agregar Guerrero de ejemplo
+        <span className="muted">Personajes de ejemplo:</span>{' '}
+        <button className="btn btn--link" onClick={() => addExample('fighter')}>
+          Guerrero (simple)
+        </button>
+        <button className="btn btn--link" onClick={() => addExample('seraphine')}>
+          Seraphine (completa)
         </button>
       </footer>
     </main>

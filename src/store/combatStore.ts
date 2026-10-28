@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { exampleFighter5 } from '../core/examples'
+import { exampleFighter5, exampleSeraphine } from '../core/examples'
 import { newId } from '../core/factory'
 import { takeDamage } from '../core/hp'
 import { longRest, shortRest } from '../core/resources'
@@ -30,7 +30,8 @@ type CombatStore = {
   /** Guarda un personaje creado o editado (ya validado). */
   saveCharacter: (character: Character) => Promise<void>
   deleteCharacter: (id: string) => Promise<void>
-  addExample: () => Promise<void>
+  /** Añade un personaje de ejemplo: el Guerrero simple o Seraphine, más completa. */
+  addExample: (which?: 'fighter' | 'seraphine') => Promise<void>
   /** Guarda varios personajes importados (reemplaza los que tengan el mismo id). */
   importCharacters: (characters: Character[], skipped: string[]) => Promise<void>
   /** Aplica una operación del núcleo y la registra en el historial. */
@@ -169,8 +170,9 @@ export const useCombat = create<CombatStore>()((set, get) => {
       })
     },
 
-    addExample: async () => {
-      await get().saveCharacter({ ...exampleFighter5(), id: newId() })
+    addExample: async (which = 'fighter') => {
+      const example = which === 'seraphine' ? exampleSeraphine() : exampleFighter5()
+      await get().saveCharacter({ ...example, id: newId() })
     },
 
     importCharacters: async (characters, skipped) => {

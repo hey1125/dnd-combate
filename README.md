@@ -73,7 +73,16 @@ En pantallas más angostas pasa a dos columnas y luego a una.
 
 ### 1. Prepara el personaje
 
-En **Personajes** crea uno con **+ Nuevo** o importa un JSON con **Importar archivo…**. En el editor defines:
+En **Personajes** crea uno con **+ Nuevo** o importa un JSON con **Importar archivo…**.
+
+Para ver la app con datos de verdad, al pie de **Personajes** hay dos ejemplos:
+
+- **Guerrero (simple)**: un guerrero de nivel 5 con lo básico.
+- **Seraphine (completa)**: una Artífice 5 / Guerrera 2 con espacios de conjuro, objetos personalizados con usos
+  diarios, munición, pociones, recursos agrupados, descripciones, ventajas y resistencias, y un recordatorio de
+  descanso (el trastorno diario del Necronomicón). Es buena referencia para armar un personaje propio.
+
+En el editor defines:
 
 - **Datos básicos**: nivel, velocidad, PG máximos y ataques por acción (2 con Ataque extra).
 - **Recursos**: todo lo que se gasta y se recupera. Cada uno tiene un máximo, cuándo se recarga (por turno,
@@ -185,6 +194,9 @@ El respaldo es un JSON con esta forma:
 }
 ```
 
+Hay un ejemplo completo en [`examples/seraphine-delmark.json`](examples/seraphine-delmark.json) con todos los
+campos: grupos, descripciones, ventajas, recordatorios de descanso y recursos de cada tipo de recarga.
+
 También se puede importar una lista de personajes o un personaje suelto. Cada personaje se valida al importarlo
 (`src/core/schema.ts`), y los que no pasan se omiten avisando por qué.
 
@@ -194,6 +206,7 @@ Los `id` de recursos y rasgos deben ser estables entre versiones de la ficha: es
 ## Cómo está organizado
 
 ```
+examples/  Personaje de ejemplo completo en JSON (Seraphine).
 src/
   core/   Reglas del juego: tipos, turno, recursos, PG, efectos, descansos, validación e importación.
           Sin React ni base de datos, con tests para cada parte.
@@ -223,7 +236,5 @@ publicado bajo licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/
 Proyecto de fans sin fines de lucro. No está afiliado ni respaldado por Wizards of the Coast ni por
 [Nivel20](https://nivel20.com). Dungeons & Dragons y D&D son marcas de Wizards of the Coast LLC.
 
-## Licencia
 
-Todavía sin licencia. Mientras no se elija una, el código se puede ver pero no reutilizar.
-Si quieres que otros puedan usarlo, añade un archivo `LICENSE` (por ejemplo, [MIT](https://choosealicense.com/licenses/mit/)).
+
