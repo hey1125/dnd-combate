@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { exportCharacters, parseImport } from '../core/io'
+import { exportCharacters, mergeCharacter, parseImport } from '../core/io'
 import type { Character } from '../core/types'
 import { useCombat } from '../store/combatStore'
 
@@ -34,13 +34,33 @@ export function CharacterList({ onPlay, onEdit }: Props) {
   const { deleteCharacter, addExample, importCharacters, dismissNotice } = useCombat.getState()
   const [confirming, setConfirming] = useState<string | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
+  // Importación esperando que elijas qué hacer con los personajes que ya existen.
+  const [pending, setPending] = useState<{ characters: Character[]; skipped: string[] } | null>(null)
+
+  const existing = new Map(characters.map((c) => [c.id, c]))
+  const repeated = pending ? pending.characters.filter((c) => existing.has(c.id)) : []
 
   const onFile = async (file: File | undefined) => {
     if (!file) return
     const result = parseImport(await file.text())
-    if (!result.ok) useCombat.setState({ notice: { kind: 'error', text: result.error } })
-    else await importCharacters(result.characters, result.skipped)
     if (fileInput.current) fileInput.current.value = ''
+    if (!result.ok) return useCombat.setState({ notice: { kind: 'error', text: result.error } })
+    // Si alguno ya existe, pregunta; si no, importa directo.
+    if (result.characters.some((c) => existing.has(c.id))) setPending(result)
+    else await importCharacters(result.characters, result.skipped)
+  }
+
+  const finishImport = async (mode: 'update' | 'replace') => {
+    if (!pending) return
+    const list =
+      mode === 'update'
+        ? pending.characters.map((c) => {
+            const old = existing.get(c.id)
+            return old ? mergeCharacter(old, c) : c
+          })
+        : pending.characters
+    setPending(null)
+    await importCharacters(list, pending.skipped)
   }
 
   return (
@@ -125,7 +145,39 @@ export function CharacterList({ onPlay, onEdit }: Props) {
             onChange={(e) => onFile(e.target.files?.[0])}
           />
         </div>
-        <p className="hint">Importar un personaje que ya existe lo reemplaza con la versión del archivo.</p>
+        {pending ? (
+          <div className="import-choice" role="group" aria-label="Qué hacer con los personajes que ya existen">
+            <p className="import-choice__text">
+              {repeated.length === 1 ? (
+                <>
+                  <strong>{repeated[0].name}</strong> ya existe.
+                </>
+              ) : (
+                <>
+                  {repeated.length} personajes ya existen: <strong>{repeated.map((c) => c.name).join(', ')}</strong>.
+                </>
+              )}{' '}
+              ¿Qué hago con {repeated.length === 1 ? 'él' : 'ellos'}?
+            </p>
+            <div className="row">
+              <button className="btn btn--primary" onClick={() => finishImport('update')}>
+                Actualizar ficha
+              </button>
+              <button className="btn" onClick={() => finishImport('replace')}>
+                Reemplazar todo
+              </button>
+              <button className="btn btn--link" onClick={() => setPending(null)}>
+                Cancelar
+              </button>
+            </div>
+            <p className="hint">
+              <strong>Actualizar ficha</strong> trae los rasgos, recursos y máximos nuevos, pero conserva tus PG, usos gastados, estados y
+              ronda. <strong>Reemplazar todo</strong> deja el personaje tal como viene en el archivo (todo recargado).
+            </p>
+          </div>
+        ) : (
+          <p className="hint">Si importas un personaje que ya existe, podrás elegir entre actualizar su ficha o reemplazarlo.</p>
+        )}
       </section>
 
       <footer className="footer">

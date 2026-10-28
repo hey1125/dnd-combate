@@ -1,14 +1,40 @@
 import { useState } from 'react'
 import { attack, move, spendCost } from '../core/turn'
-import type { Character } from '../core/types'
+import type { ActionCost, Character } from '../core/types'
 import { useCombat } from '../store/combatStore'
 
-function Slot({ label, available, detail }: { label: string; available: boolean; detail?: string }) {
+/** Casilla de acción, adicional o reacción: un clic la marca como usada (para cosas que no son un rasgo). */
+function Slot({
+  label,
+  available,
+  detail,
+  onUse,
+}: {
+  label: string
+  available: boolean
+  detail?: string
+  onUse?: () => void
+}) {
+  const state = detail ?? (available ? 'Disponible' : 'Usada')
+  const className = `slot ${available ? 'slot--on' : 'slot--off'}`
+  if (!onUse) {
+    return (
+      <div className={className}>
+        <span className="slot__label">{label}</span>
+        <span className="slot__state">{state}</span>
+      </div>
+    )
+  }
   return (
-    <div className={`slot ${available ? 'slot--on' : 'slot--off'}`}>
+    <button
+      className={`${className} slot--button`}
+      disabled={!available}
+      title={available ? `Marcar ${label.toLowerCase()} como usada` : undefined}
+      onClick={onUse}
+    >
       <span className="slot__label">{label}</span>
-      <span className="slot__state">{detail ?? (available ? 'Disponible' : 'Usada')}</span>
-    </div>
+      <span className="slot__state">{available ? `${state} · usar` : state}</span>
+    </button>
   )
 }
 
@@ -28,6 +54,7 @@ export function TurnPanel({ character }: { character: Character }) {
     apply(`Se mueve ${n} pies`, (c) => move(c, n))
     setFeet('')
   }
+  const use = (cost: ActionCost, text: string) => () => apply(text, (c) => spendCost(c, cost))
 
   return (
     <section className="card">
@@ -37,9 +64,11 @@ export function TurnPanel({ character }: { character: Character }) {
           label="Acción"
           available={t.actionAvailable || t.attacksRemaining > 0}
           detail={t.attacksRemaining > 0 ? `${t.attacksRemaining} ataque${t.attacksRemaining > 1 ? 's' : ''}` : undefined}
+          // Con ataques pendientes la acción ya está gastada: la casilla solo informa.
+          onUse={t.attacksRemaining > 0 ? undefined : use('action', 'Usa su acción')}
         />
-        <Slot label="Adicional" available={t.bonusActionAvailable} />
-        <Slot label="Reacción" available={t.reactionAvailable} />
+        <Slot label="Adicional" available={t.bonusActionAvailable} onUse={use('bonusAction', 'Usa su acción adicional')} />
+        <Slot label="Reacción" available={t.reactionAvailable} onUse={use('reaction', 'Usa su reacción')} />
         <Slot label="Movimiento" available={t.movementRemaining > 0} detail={`${t.movementRemaining} pies`} />
       </div>
 
@@ -51,23 +80,13 @@ export function TurnPanel({ character }: { character: Character }) {
       >
         {attackLabel}
       </button>
+      {!attackCheck.ok && <p className="hint hint--warn">{attackCheck.error}</p>}
 
-      <div className="row">
-        <button className="btn" disabled={!t.actionAvailable} onClick={() => apply('Usa su acción', (c) => spendCost(c, 'action'))}>
-          Otra acción
-        </button>
-        <button className="btn" disabled={!t.bonusActionAvailable} onClick={() => apply('Usa su acción adicional', (c) => spendCost(c, 'bonusAction'))}>
-          Otra adicional
-        </button>
-        <button className="btn" disabled={!t.reactionAvailable} onClick={() => apply('Usa su reacción', (c) => spendCost(c, 'reaction'))}>
-          Otra reacción
-        </button>
-      </div>
-
-      <div className="row move">
+      <div className="move" role="group" aria-label="Moverse">
+        <span className="move__label">Mover</span>
         {[5, 10, 15, 30].map((n) => (
           <button key={n} className="btn btn--small" disabled={n > t.movementRemaining} onClick={() => doMove(n)}>
-            −{n}
+            {n}
           </button>
         ))}
         <input
@@ -75,14 +94,14 @@ export function TurnPanel({ character }: { character: Character }) {
           min={1}
           inputMode="numeric"
           placeholder="pies"
+          aria-label="Pies a moverse"
+          title="Escribe los pies y pulsa Enter"
           value={feet}
           onChange={(e) => setFeet(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && doMove(Number(feet))}
         />
-        <button className="btn btn--small" onClick={() => doMove(Number(feet))}>
-          Mover
-        </button>
       </div>
+      <p className="hint">Toca una casilla para gastarla en algo que no está en tu lista (por ejemplo, Esquivar).</p>
     </section>
   )
 }

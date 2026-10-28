@@ -32,9 +32,18 @@ export function startTurn(character: Character): Result {
   }
 }
 
-/** Inicia un combate nuevo en la ronda 1. */
+/** Inicia un combate nuevo en la ronda 1 y guarda cómo estaban los recursos, para ver lo gastado en él. */
 export function startCombat(character: Character): Character {
-  return { ...character, turn: freshTurn(character, 1) }
+  const combatStart = Object.fromEntries(character.resources.map((r) => [r.id, r.current]))
+  return { ...character, combatStart, turn: freshTurn(character, 1) }
+}
+
+/** Cuánto se gastó de un recurso desde que empezó el combate (0 si no hay combate o si se recuperó). */
+export function spentThisCombat(character: Character, resourceId: string): number {
+  const start = character.combatStart?.[resourceId]
+  const r = character.resources.find((x) => x.id === resourceId)
+  if (start === undefined || !r) return 0
+  return Math.max(0, start - r.current)
 }
 
 function costName(cost: ActionCost): string {

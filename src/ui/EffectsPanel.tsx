@@ -3,10 +3,16 @@ import { CONDITIONS, addEffect, removeEffect } from '../core/effects'
 import type { Character } from '../core/types'
 import { useCombat } from '../store/combatStore'
 
+/** Los estados que más salen en combate, a un clic (sin duración: se quitan a mano). */
+const QUICK = ['Derribado', 'Envenenado', 'Asustado', 'Agarrado', 'Cegado', 'Hechizado']
+
 export function EffectsPanel({ character }: { character: Character }) {
   const apply = useCombat((s) => s.apply)
   const [name, setName] = useState('')
   const [rounds, setRounds] = useState('')
+
+  const active = new Set(character.effects.map((e) => e.name))
+  const quick = QUICK.filter((q) => !active.has(q))
 
   const add = () => {
     const n = name.trim()
@@ -44,10 +50,21 @@ export function EffectsPanel({ character }: { character: Character }) {
         </ul>
       )}
 
-      <div className="row">
+      {quick.length > 0 && (
+        <div className="recent" aria-label="Estados rápidos">
+          {quick.map((q) => (
+            <button key={q} className="chip" onClick={() => apply(`Gana el estado ${q}`, (c) => addEffect(c, { name: q, roundsLeft: null }))}>
+              + {q}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="row effect-add">
         <input
           list="conditions"
-          placeholder="Estado (ej. Envenenado)"
+          placeholder="Otro estado…"
+          aria-label="Nombre del estado"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && add()}
@@ -63,6 +80,7 @@ export function EffectsPanel({ character }: { character: Character }) {
           min={1}
           inputMode="numeric"
           placeholder="Rondas"
+          aria-label="Rondas (vacío = hasta que lo quites)"
           title="Vacío = hasta que lo quites"
           value={rounds}
           onChange={(e) => setRounds(e.target.value)}

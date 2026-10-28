@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { applyEdits, fullCasterSlots, newCharacter, newFeature, newResource } from '../core/factory'
+import { applyEdits, fullCasterSlots, newAdvantage, newCharacter, newFeature, newResource } from '../core/factory'
 import { validateCharacter } from '../core/schema'
-import type { ActionCost, Character, Feature, Recharge, Resource } from '../core/types'
+import type { ActionCost, Advantage, AdvantageKind, Character, Feature, Recharge, Resource } from '../core/types'
 import { isSpellSlot } from '../core/spells'
 import { Field, NumberInput, OptionalNumberInput, Select } from './fields'
-import { costLabel, rechargeLabel } from './labels'
+import { RestPromptsEditor } from './RestPromptsEditor'
+import { advantageLabel, costLabel, rechargeLabel } from './labels'
 
 type Props = {
   /** null = personaje nuevo */
@@ -14,6 +15,7 @@ type Props = {
 }
 
 const costOptions = (Object.keys(costLabel) as ActionCost[]).map((value) => ({ value, label: costLabel[value] }))
+const advantageOptions = (Object.keys(advantageLabel) as AdvantageKind[]).map((value) => ({ value, label: advantageLabel[value] }))
 const rechargeOptions = (Object.keys(rechargeLabel) as Recharge[]).map((value) => ({ value, label: rechargeLabel[value] }))
 
 type AmountKey = 'all' | 'half' | 'one'
@@ -41,6 +43,9 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
     setDraft((d) => ({ ...d, resources: d.resources.map((r) => (r.id === id ? { ...r, ...p } : r)) }))
   const patchFeature = (id: string, p: Partial<Feature>) =>
     setDraft((d) => ({ ...d, features: d.features.map((f) => (f.id === id ? { ...f, ...p } : f)) }))
+
+  const patchAdvantage = (id: string, p: Partial<Advantage>) =>
+    setDraft((d) => ({ ...d, advantages: d.advantages.map((a) => (a.id === id ? { ...a, ...p } : a)) }))
 
   const addSpellSlots = () =>
     setDraft((d) => ({
@@ -115,6 +120,7 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
 
       <section className="card">
         <h2>Recursos</h2>
+        <GroupOptions id="resource-groups" items={draft.resources} />
         {draft.resources.length === 0 && <p className="muted">Ki, Furia, espacios de conjuro, usos de rasgos…</p>}
         <div className="edit-list">
           {draft.resources.map((r) => (
@@ -134,6 +140,14 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
                     value={amountKey(r)}
                     options={amountOptions}
                     onChange={(k) => patchResource(r.id, { rechargeAmount: k === 'one' ? 1 : k })}
+                  />
+                </Field>
+                <Field label="Grupo">
+                  <input
+                    value={r.group ?? ''}
+                    placeholder="General"
+                    list="resource-groups"
+                    onChange={(e) => patchResource(r.id, { group: e.target.value || undefined })}
                   />
                 </Field>
               </div>
@@ -158,6 +172,7 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
 
       <section className="card">
         <h2>Rasgos y conjuros</h2>
+        <GroupOptions id="feature-groups" items={draft.features} />
         {draft.features.length === 0 && <p className="muted">Lo que aparece como botón en combate.</p>}
         <div className="edit-list">
           {draft.features.map((f) => (
@@ -198,6 +213,14 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
                     }
                   />
                 </Field>
+                <Field label="Grupo">
+                  <input
+                    value={f.group ?? ''}
+                    placeholder="General"
+                    list="feature-groups"
+                    onChange={(e) => patchFeature(f.id, { group: e.target.value || undefined })}
+                  />
+                </Field>
                 <Field label="Duración (rondas)">
                   <OptionalNumberInput
                     value={f.durationRounds}
@@ -210,6 +233,14 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
                   <input type="checkbox" checked={!!f.concentration} onChange={(e) => patchFeature(f.id, { concentration: e.target.checked })} />
                   Concentración
                 </label>
+                <Field label="Descripción" className="span-full">
+                  <textarea
+                    rows={2}
+                    value={f.description ?? ''}
+                    placeholder="Opcional: CD, daño, alcance, reglas…"
+                    onChange={(e) => patchFeature(f.id, { description: e.target.value || undefined })}
+                  />
+                </Field>
                 {isSpellSlot(f.resourceId) && (
                   <label className="check">
                     <input type="checkbox" checked={!!f.upcast} onChange={(e) => patchFeature(f.id, { upcast: e.target.checked })} />
@@ -237,11 +268,68 @@ export function CharacterEditor({ character, onSave, onCancel }: Props) {
         </div>
       </section>
 
+      <section className="card">
+        <h2>Ventajas y defensas</h2>
+        {draft.advantages.length === 0 && (
+          <p className="muted">Con qué tienes ventaja o desventaja, y a qué eres resistente o inmune.</p>
+        )}
+        <div className="edit-list">
+          {draft.advantages.map((a) => (
+            <div key={a.id} className="edit-item">
+              <div className="form-grid">
+                <Field label="Tipo">
+                  <Select value={a.kind} options={advantageOptions} onChange={(kind) => patchAdvantage(a.id, { kind })} />
+                </Field>
+                <Field label="A qué se aplica" className="span-2">
+                  <input
+                    value={a.text}
+                    placeholder="Ej. salvaciones contra hechizado"
+                    onChange={(e) => patchAdvantage(a.id, { text: e.target.value })}
+                  />
+                </Field>
+                <Field label="Fuente">
+                  <input
+                    value={a.source ?? ''}
+                    placeholder="Opcional"
+                    onChange={(e) => patchAdvantage(a.id, { source: e.target.value || undefined })}
+                  />
+                </Field>
+              </div>
+              <button
+                className="btn btn--small btn--ghost-danger"
+                onClick={() => setDraft((d) => ({ ...d, advantages: d.advantages.filter((x) => x.id !== a.id) }))}
+              >
+                Quitar
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="row">
+          <button className="btn" onClick={() => setDraft((d) => ({ ...d, advantages: [...d.advantages, newAdvantage()] }))}>
+            + Ventaja o defensa
+          </button>
+        </div>
+      </section>
+
+      <RestPromptsEditor prompts={draft.restPrompts} onChange={(restPrompts) => patch({ restPrompts })} />
+
       <div className="sticky-save">
         <button className="btn btn--primary btn--big" onClick={save}>
           Guardar
         </button>
       </div>
     </main>
+  )
+}
+
+/** Sugerencias de grupo: los que ya existen en la lista. */
+function GroupOptions({ id, items }: { id: string; items: { group?: string }[] }) {
+  const groups = [...new Set(items.map((i) => i.group?.trim()).filter((g): g is string => !!g))]
+  return (
+    <datalist id={id}>
+      {groups.map((g) => (
+        <option key={g} value={g} />
+      ))}
+    </datalist>
   )
 }

@@ -1,4 +1,4 @@
-import type { ActionCost, Recharge } from '../core/types'
+import type { ActionCost, AdvantageKind, Recharge } from '../core/types'
 
 export const costLabel: Record<ActionCost, string> = {
   action: 'Acción',
@@ -12,4 +12,11 @@ export const rechargeLabel: Record<Recharge, string> = {
   shortRest: 'desc. corto',
   longRest: 'desc. largo',
   never: 'no se recarga',
+}
+
+export const advantageLabel: Record<AdvantageKind, string> = {
+  advantage: 'Ventaja',
+  disadvantage: 'Desventaja',
+  resistance: 'Resistencia',
+  immunity: 'Inmunidad',
 }

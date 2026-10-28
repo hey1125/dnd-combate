@@ -64,3 +64,25 @@ export function longRest(character: Character): Character {
     deathSaves: NO_DEATH_SAVES,
   }
 }
+
+export type RestPreview = {
+  /** Recursos que subirían, con el valor de antes y de después. */
+  resources: { id: string; name: string; from: number; to: number; max: number }[]
+  /** PG que recuperarías (solo descanso largo). */
+  hpGain: number
+  /** Efectos que se quitarían (solo descanso largo). */
+  effectsCleared: number
+}
+
+/** Qué cambiaría un descanso, sin aplicarlo. */
+export function restPreview(character: Character, kind: 'short' | 'long'): RestPreview {
+  const after = kind === 'short' ? shortRest(character) : longRest(character)
+  const before = new Map(character.resources.map((r) => [r.id, r.current]))
+  return {
+    resources: after.resources
+      .filter((r) => r.current > (before.get(r.id) ?? r.current))
+      .map((r) => ({ id: r.id, name: r.name, from: before.get(r.id) ?? 0, to: r.current, max: r.max })),
+    hpGain: after.hp.current - character.hp.current,
+    effectsCleared: character.effects.length - after.effects.length,
+  }
+}

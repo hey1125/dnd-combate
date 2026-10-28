@@ -2,6 +2,9 @@ import { create } from 'zustand'
 import { exampleFighter5 } from '../core/examples'
 import { newId } from '../core/factory'
 import { takeDamage } from '../core/hp'
+import { longRest, shortRest } from '../core/resources'
+import { answerPrompt, promptsFor, type RestKind } from '../core/restPrompts'
+import { dropConcentration } from '../core/turn'
 import { validateCharacter } from '../core/schema'
 import type { Character, Result } from '../core/types'
 import type { CharacterRepository } from '../data/repository'
@@ -18,6 +21,10 @@ type CombatStore = {
   history: Character[]
   log: LogEntry[]
   notice: Notice | null
+  /** CD de cada salvación de concentración pendiente (una por golpe recibido). */
+  concentrationChecks: number[]
+  /** Recordatorios de descanso esperando respuesta (ids). */
+  pendingPrompts: string[]
   init: (repo: CharacterRepository) => Promise<void>
   select: (id: string) => void
   /** Guarda un personaje creado o editado (ya validado). */
@@ -29,6 +36,14 @@ type CombatStore = {
   /** Aplica una operación del núcleo y la registra en el historial. */
   apply: (label: string, op: Operation) => void
   damage: (amount: number) => void
+  /** Resuelve la salvación de concentración pendiente más antigua. */
+  resolveConcentration: (passed: boolean) => void
+  /** Descansa y deja pendientes los recordatorios que tocan. */
+  rest: (kind: RestKind) => void
+  answerRestPrompt: (promptId: string, optionIndex: number) => void
+  skipRestPrompt: (promptId: string) => void
+  /** Cambia las notas sin pasar por el historial de deshacer. */
+  setNotes: (notes: string) => void
   undo: () => void
   dismissNotice: () => void
 }
@@ -38,6 +53,7 @@ const MAX_LOG = 100
 const ACTIVE_KEY = 'dnd-combate:active'
 let repo: CharacterRepository | null = null
 let logId = 0
+let notesTimer: ReturnType<typeof setTimeout> | undefined
 
 // localStorage solo para recordar cuál personaje estaba abierto (comodidad, no datos importantes).
 function readActive(): string | null {
@@ -76,6 +92,7 @@ export const useCombat = create<CombatStore>()((set, get) => {
       history: [...s.history, prev].slice(-MAX_HISTORY),
       log: [{ id: ++logId, round: next.turn.round, text: label }, ...s.log].slice(0, MAX_LOG),
       notice,
+      concentrationChecks: next.concentratingOn ? s.concentrationChecks : [],
     }))
     persist(next)
   }
@@ -87,6 +104,8 @@ export const useCombat = create<CombatStore>()((set, get) => {
     history: [],
     log: [],
     notice: null,
+    concentrationChecks: [],
+    pendingPrompts: [],
 
     init: async (repository) => {
       repo = repository
@@ -103,7 +122,7 @@ export const useCombat = create<CombatStore>()((set, get) => {
           characters.push(example)
         }
         const active = characters.find((c) => c.id === readActive()) ?? characters[0]
-        set({ characters, character: active, loaded: true })
+        set({ characters, character: active, loaded: true, history: [], log: [], concentrationChecks: [], pendingPrompts: [] })
       } catch {
         const example = exampleFighter5()
         set({ characters: [example], character: example, loaded: true, notice: { kind: 'error', text: 'No se pudo cargar el guardado local' } })
@@ -114,7 +133,7 @@ export const useCombat = create<CombatStore>()((set, get) => {
       const character = get().characters.find((c) => c.id === id)
       if (!character) return
       writeActive(id)
-      set({ character, history: [], log: [], notice: null })
+      set({ character, history: [], log: [], notice: null, concentrationChecks: [], pendingPrompts: [] })
     },
 
     saveCharacter: async (character) => {
@@ -193,20 +212,66 @@ export const useCombat = create<CombatStore>()((set, get) => {
       if (concentrationDC) texts.push(`Salvación de CON CD ${concentrationDC} para mantener ${current.concentratingOn}`)
       const notice: Notice | null = texts.length ? { kind: 'info', text: texts.join(' · ') } : null
       commit(character, `Recibe ${amount} de daño`, notice)
+      if (concentrationDC && character.concentratingOn) set((s) => ({ concentrationChecks: [...s.concentrationChecks, concentrationDC] }))
+    },
+
+    resolveConcentration: (passed) => {
+      const { character, concentrationChecks } = get()
+      const dc = concentrationChecks[0]
+      if (!character || dc === undefined) return
+      if (passed) {
+        commit(character, `Mantiene la concentración en ${character.concentratingOn} (CD ${dc})`)
+        set({ concentrationChecks: concentrationChecks.slice(1) })
+      } else {
+        // Al perder la concentración, commit limpia el resto de salvaciones pendientes.
+        commit(dropConcentration(character), `Pierde la concentración en ${character.concentratingOn} (falló CD ${dc})`)
+      }
     },
 
     undo: () => {
-      const { history, log } = get()
-      const prev = history.at(-1)
-      if (!prev) return
+      const { history, log, character } = get()
+      const snapshot = history.at(-1)
+      if (!snapshot) return
+      // Las notas no forman parte del historial: deshacer nunca borra lo que escribiste.
+      const prev = { ...snapshot, notes: character?.notes }
       set((s) => ({
         character: prev,
         characters: upsert(s.characters, prev),
         history: history.slice(0, -1),
         log: log.slice(1),
         notice: null,
+        concentrationChecks: [],
+        pendingPrompts: [],
       }))
       persist(prev)
+    },
+
+    rest: (kind) => {
+      const current = get().character
+      if (!current) return
+      commit(kind === 'short' ? shortRest(current) : longRest(current), kind === 'short' ? 'Descanso corto' : 'Descanso largo')
+      set({ pendingPrompts: promptsFor(current, kind).map((p) => p.id) })
+    },
+
+    answerRestPrompt: (promptId, optionIndex) => {
+      const current = get().character
+      const prompt = current?.restPrompts.find((p) => p.id === promptId)
+      const option = prompt?.options[optionIndex]
+      if (!current || !prompt || !option) return
+      commit(answerPrompt(current, promptId, optionIndex), `${prompt.question} → ${option.label}`)
+      set((s) => ({ pendingPrompts: s.pendingPrompts.filter((id) => id !== promptId) }))
+    },
+
+    skipRestPrompt: (promptId) => set((s) => ({ pendingPrompts: s.pendingPrompts.filter((id) => id !== promptId) })),
+
+    setNotes: (notes) => {
+      const current = get().character
+      if (!current) return
+      const next = { ...current, notes }
+      set((s) => ({ character: next, characters: upsert(s.characters, next) }))
+      // Guarda cuando dejas de escribir, no en cada tecla.
+      clearTimeout(notesTimer)
+      notesTimer = setTimeout(() => persist(get().character ?? next), 500)
     },
 
     dismissNotice: () => set({ notice: null }),

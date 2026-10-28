@@ -1,6 +1,6 @@
 import { newId } from './id'
 import { freshTurn } from './turn'
-import type { Character, Feature, Resource } from './types'
+import type { Advantage, Character, Feature, Resource } from './types'
 
 export { newId }
 
@@ -17,6 +17,8 @@ export function newCharacter(): Character {
     features: [],
     concentratingOn: null,
     effects: [],
+    advantages: [],
+    restPrompts: [],
     deathSaves: { successes: 0, failures: 0, stable: false },
   }
   return { ...base, turn: freshTurn(base as Character, 1) }
@@ -24,6 +26,10 @@ export function newCharacter(): Character {
 
 export function newResource(partial: Partial<Resource> = {}): Resource {
   return { id: newId(), name: 'Nuevo recurso', max: 1, current: 1, recharge: 'longRest', ...partial }
+}
+
+export function newAdvantage(partial: Partial<Advantage> = {}): Advantage {
+  return { id: newId(), kind: 'advantage', text: '', ...partial }
 }
 
 export function newFeature(partial: Partial<Feature> = {}): Feature {

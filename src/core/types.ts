@@ -14,6 +14,8 @@ export type Resource = {
   current: number
   recharge: Recharge
   rechargeAmount?: RechargeAmount // por defecto 'all'
+  /** Sección donde se muestra (ej. "Necronomicón"). Sin grupo = "General". */
+  group?: string
 }
 
 /** Lo que cuesta usar algo dentro del turno. */
@@ -53,6 +55,23 @@ export type Feature = {
   /** Duración en rondas (1 minuto = 10). Al usarlo se añade como efecto activo. */
   durationRounds?: number
   effect?: FeatureEffect
+  /** Texto de consulta: CD, daño, alcance, reglas del objeto... Se ve al desplegar el rasgo. */
+  description?: string
+  /** Sección donde se muestra (ej. "Conjuros"). Sin grupo = "General". */
+  group?: string
+}
+
+/** Tipo de modificador situacional. */
+export type AdvantageKind = 'advantage' | 'disadvantage' | 'resistance' | 'immunity'
+
+/** Algo que tienes siempre en cuenta al tirar o recibir daño: ventaja, desventaja, resistencia o inmunidad. */
+export type Advantage = {
+  id: string
+  kind: AdvantageKind
+  /** A qué se aplica: "Salvaciones contra hechizado", "Fuego", "Tiradas de INT"... */
+  text: string
+  /** De dónde viene (opcional): "Ancestro feérico", "Armadura Junes"... */
+  source?: string
 }
 
 export type HitPoints = {
@@ -60,6 +79,9 @@ export type HitPoints = {
   max: number
   temp: number
 }
+
+/** Regla que implica un estado: ventaja, desventaja... `against` afecta a quien te ataca; `note` es un recordatorio. */
+export type EffectRule = { kind: AdvantageKind | 'against' | 'note'; text: string }
 
 /** Estado o efecto activo: Envenenado, Bendecir, Derribado... */
 export type ActiveEffect = {
@@ -69,6 +91,26 @@ export type ActiveEffect = {
   roundsLeft: number | null
   /** Si depende de tu concentración (se pierde al perderla). */
   concentration?: boolean
+  /** Reglas propias del efecto (los estados del SRD ya las traen por su nombre). */
+  rules?: EffectRule[]
+  /** Si lo añadió un recordatorio de descanso: al volver a responderlo, se reemplaza. */
+  promptId?: string
+}
+
+/** Una respuesta posible a un recordatorio de descanso. */
+export type RestPromptOption = {
+  label: string
+  /** Estado que añade esta respuesta (sin duración: dura hasta que lo reemplace la próxima respuesta o lo quites). */
+  effect?: { name: string; rules?: EffectRule[] }
+}
+
+/** Pregunta que aparece al terminar un descanso, por ejemplo el trastorno diario del Necronomicón. */
+export type RestPrompt = {
+  id: string
+  question: string
+  /** Tras qué descansos aparece. */
+  after: 'short' | 'long' | 'both'
+  options: RestPromptOption[]
 }
 
 /** Salvaciones contra muerte (solo cuentan con 0 PG). */
@@ -91,7 +133,15 @@ export type Character = {
   /** Nombre del efecto que se está concentrando, o null. */
   concentratingOn: string | null
   effects: ActiveEffect[]
+  /** Ventajas, desventajas, resistencias e inmunidades fijas del personaje. */
+  advantages: Advantage[]
+  /** Preguntas que aparecen al terminar un descanso. */
+  restPrompts: RestPrompt[]
+  /** Notas libres de la sesión. */
+  notes?: string
   deathSaves: DeathSaves
+  /** Usos de cada recurso al empezar el combate actual, para ver lo gastado en él. Sin combate = undefined. */
+  combatStart?: Record<string, number>
   turn: TurnState
 }
 
