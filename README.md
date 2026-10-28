@@ -219,6 +219,31 @@ El núcleo (`core/`) no depende de la interfaz, así que las reglas se pueden pr
 El guardado está detrás de `CharacterRepository` (`data/repository.ts`) para poder cambiar IndexedDB por otra
 fuente (por ejemplo, una API) sin tocar el resto.
 
+## A futuro
+
+### Integración con Nivel20
+
+La idea es conectar la app con [Nivel20](https://nivel20.com), donde vive la hoja de personaje, para no tener que
+preparar el JSON a mano cada vez que el personaje cambia.
+
+- **Hoy**: Nivel20 no tiene una API pública, así que la ficha se arma a mano a partir de la hoja y se importa como
+  JSON. Además, muchos objetos personalizados solo existen como texto en Nivel20 (sus usos, CD o reglas), y hay que
+  interpretarlos para convertirlos en recursos y rasgos.
+- **Cuando exista una API**:
+  - Importar el personaje directamente desde Nivel20 (nivel, PG, espacios de conjuro, rasgos y equipo).
+  - Actualizar la ficha desde Nivel20 conservando el estado de la sesión, igual que hoy hace **Actualizar ficha**
+    con un JSON.
+  - Más adelante, sincronizar en los dos sentidos lo que se gasta en la mesa (PG, usos, espacios).
+- **Ya preparado**: el guardado está detrás de la interfaz `CharacterRepository` (`src/data/repository.ts`)
+  y todo lo que entra se valida con el mismo esquema (`src/core/schema.ts`). Para conectar Nivel20 bastaría con una
+  nueva implementación de esa interfaz y una conversión de su formato al de la app, sin tocar las pantallas.
+
+### Otras ideas
+
+- Que un rasgo pueda recuperar un recurso (por ejemplo, que **Recargar** llene la munición).
+- Gastar dados de golpe en el descanso corto.
+- Respaldo automático o aviso cuando lleves tiempo sin exportar.
+
 ## Hecho con
 
 [React](https://react.dev), [Vite](https://vite.dev), [TypeScript](https://www.typescriptlang.org),
